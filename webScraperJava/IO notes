@@ -1,0 +1,127 @@
+	/*
+	List<String> tokens = new ArrayList<String>();
+	tokens.add(tempText.split(" "));
+	
+	System.out.println("START PRINT");
+	for(int j = 0; j < tokens.size(); j++) {
+		System.out.println(tokens.get(j));
+	}
+	System.out.println("END PRINT");
+	*/
+	
+	
+	/*
+	System.out.println("Number of webElements: " + webEs.size());
+	for(int j = 0; j < webEs.size(); j++) {
+		System.out.println("" + webEs.get(j).getText());
+	}
+	
+	File DestFile= new File("extractedFilePath");
+	FileUtils.writeStringToFile(DestFile, output);
+	driver.close();
+	
+	webEs.clear();
+	*/
+	
+	public static void scrapeAnalysisPage() {
+		
+		List<String> tempTickers = new ArrayList<String>();
+		List<WebElement> webEs = new ArrayList<WebElement>();
+		WebDriver driver1 = new ChromeDriver();
+		//WebElement wElement;
+		
+		for(int i = 0; i < tempTickers.size(); i++) {
+			
+			driver1.get(getAnalysisLink(tempTickers.get(i)));
+
+			/*
+			findElements()...
+			By.id().
+			By.name().
+			By.className().
+			By.tagName().
+			By.link() and By.partialLinkText().
+			By.cssSelector().
+			By.xpath().
+			*/
+			
+			//webEs = driver.findElements(By.tagName("div"));
+			webEs = driver1.findElements(By.id("Aside"));
+			
+			System.out.println("Number of webElements: " + webEs.size());
+			for(int j = 0; j < webEs.size(); j++) {
+				System.out.println("" + webEs.get(j).getText());
+			}
+			webEs.clear();
+		}
+	}
+		
+	
+	public static String getAnalysisLink(String ticker) {
+		String link = "https://finance.yahoo.com/quote/" + ticker + "/analysis?p=" + ticker;
+		return link;
+	}
+		
+			
+	//method defined for reading a specific cell in .xsls file [see example: https://www.javatpoint.com/how-to-read-excel-file-in-java]
+	public static String ReadCellData(int vRow, int vColumn) {  
+		String value = null;          //variable for storing the cell value  
+		Workbook wb = null;           //initialize Workbook null  
+
+//		Equity tmpTckr = new Equity();   //object of the class  
+//		tmpTckr.setTicker(ReadCellData(2, 0));   //reading the value of 2nd row and 2nd column
+//		System.out.println("" + tmpTckr.getTicker()); 
+		
+		try {
+			//reading data from a file in the form of bytes  
+			FileInputStream fis = new FileInputStream("C:\\Users\\voted\\Documents\\Financial\\Trading\\trading_notebook.xlsb.xlsx");  
+			//constructs an XSSFWorkbook object, by buffering the whole stream into the memory
+			wb = new XSSFWorkbook(fis);  
+		}  
+		catch(FileNotFoundException e) { e.printStackTrace(); }  
+		catch(IOException e1) { e1.printStackTrace(); }  
+		
+		Sheet sheet = wb.getSheetAt(0);   //getting the XSSFSheet object at given index  
+		Row row = sheet.getRow(vRow); //returns the logical row  
+		Cell cell = row.getCell(vColumn); //getting the cell representing the given column  
+		value = cell.getStringCellValue();    //getting cell value  
+		return value;                
+	}
+	
+	//method defined for reading an entire sheet
+	public static void ReadSheetData() {
+		
+		try {
+			File file = new File("C:\\Users\\voted\\Documents\\Financial\\Trading\\trading_notebook.xlsb.xlsx");   //creating a new file instance  
+			FileInputStream fis = new FileInputStream(file);   //obtaining bytes from the file
+			XSSFWorkbook wb = new XSSFWorkbook(fis);   //creating Workbook instance that refers to .xlsx file
+			XSSFSheet sheet = wb.getSheetAt(1);     //creating a Sheet object to retrieve object  
+			Iterator<Row> itr = sheet.iterator();    //iterating over excel file  
+			while (itr.hasNext()) {
+				Row row = itr.next();  
+				Iterator<Cell> cellIterator = row.cellIterator();   //iterating over each column  
+				while (cellIterator.hasNext()) {  
+					Cell cell = cellIterator.next();
+					switch (cell.getCellTypeEnum()) {  
+						case STRING :    //field that represents string cell type 
+							System.out.println(cell.getStringCellValue());  
+							break;  
+						case NUMERIC:    //field that represents number cell type  
+							System.out.println(cell.getNumericCellValue());  
+							break;
+						case ERROR:    //field that represents number cell type  
+							System.out.println(cell.getErrorCellValue());  
+							break; 
+						case BOOLEAN:    //field that represents number cell type  
+							System.out.println(cell.getBooleanCellValue());  
+							break; 
+						default:  
+					}  
+				}
+			}
+			fis.close();
+			wb.close();
+		}
+		catch(Exception e) { e.printStackTrace(); }   
+		
+	}
